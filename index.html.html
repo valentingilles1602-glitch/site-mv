@@ -1,0 +1,1341 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full bg-neutral-950 text-neutral-100 font-sans antialiased">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenue chez M&V - Collection Homme</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Font Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Cinzel', 'serif']
+                    },
+                    colors: {
+                        gold: '#D4AF37',
+                        goldHover: '#AA8C2C'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #0a0a0a;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #262626;
+            border-radius: 9999px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #404040;
+        }
+    </style>
+</head>
+<body class="h-full flex flex-col bg-neutral-950 text-neutral-100 custom-scrollbar selection:bg-neutral-100 selection:text-neutral-950">
+
+    <!-- Notification Toast Bar -->
+    <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-3 pointer-events-none"></div>
+
+    <!-- Header -->
+    <header class="sticky top-0 z-40 bg-neutral-950/90 backdrop-blur-md border-b border-neutral-800/60 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            
+            <!-- Logo -->
+            <a href="#" onclick="showSection('shop')" class="flex items-center gap-3 group">
+                <div class="w-10 h-10 border border-neutral-700 group-hover:border-neutral-100 flex items-center justify-center transition-colors">
+                    <span class="font-serif font-black text-xl tracking-widest text-neutral-100">M&V</span>
+                </div>
+                <span class="font-serif font-bold text-lg tracking-widest text-neutral-100 hidden sm:inline-block">M&V</span>
+            </a>
+
+            <!-- Navigation Bar -->
+            <nav class="hidden md:flex items-center space-x-8 font-medium text-xs tracking-widest uppercase">
+                <a href="#" onclick="showSection('shop')" class="hover:text-neutral-400 transition-colors py-2">Collection</a>
+                <a href="#" onclick="showSection('about')" class="hover:text-neutral-400 transition-colors py-2">La Marque</a>
+                <span id="nav-admin-link" class="hidden">
+                    <button onclick="showSection('admin')" class="text-gold hover:text-amber-300 transition-colors flex items-center gap-2 py-2">
+                        <i class="fa-solid fa-user-shield"></i> Espace Admin
+                    </button>
+                </span>
+            </nav>
+
+            <!-- User & Cart Actions -->
+            <div class="flex items-center space-x-5">
+                <!-- User Account Button -->
+                <div id="auth-button-container">
+                    <button onclick="openAuthModal()" class="text-neutral-300 hover:text-white transition-colors flex items-center gap-2 text-xs uppercase tracking-widest">
+                        <i class="fa-regular fa-user text-base"></i>
+                        <span id="user-display-name" class="hidden sm:inline">Se connecter</span>
+                    </button>
+                </div>
+
+                <!-- Shopping Cart Button -->
+                <button onclick="toggleCartDrawer()" class="relative p-2 text-neutral-300 hover:text-white transition-colors">
+                    <i class="fa-solid fa-bag-shopping text-lg"></i>
+                    <span id="cart-badge" class="absolute -top-1 -right-1 bg-neutral-100 text-neutral-950 font-bold text-[10px] w-5 h-5 rounded-full flex items-center justify-center opacity-0 transition-opacity">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1">
+        
+        <!-- SECTION 1: SHOP / CATALOGUE -->
+        <section id="section-shop" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <!-- Hero Banner -->
+            <div class="text-center py-12 border-b border-neutral-900 mb-12">
+                <p class="font-serif uppercase tracking-[0.3em] text-xs text-neutral-400 mb-3">Collection Exclusive Homme</p>
+                <h1 class="font-serif text-3xl sm:text-5xl font-extrabold tracking-widest uppercase text-neutral-100 mb-4">Bienvenue chez M&V</h1>
+                <p class="text-neutral-400 max-w-xl mx-auto text-sm font-light leading-relaxed">
+                    T-shirts d'exception. Design épuré avec signature M&V sur le cœur et grand imprimé dans le dos.
+                </p>
+            </div>
+
+            <!-- Filters & Counter -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+                <div>
+                    <h2 class="text-sm uppercase tracking-widest font-semibold text-neutral-300">T-Shirts Homme</h2>
+                    <p id="products-count" class="text-xs text-neutral-500">2 modèles disponibles</p>
+                </div>
+
+                <!-- Color Filter Buttons -->
+                <div class="flex items-center space-x-2 bg-neutral-900/80 p-1 rounded-md border border-neutral-800/80 text-xs uppercase tracking-wider">
+                    <button onclick="filterProducts('all')" id="filter-btn-all" class="px-4 py-2 rounded font-medium transition-all bg-neutral-100 text-neutral-950">Tous</button>
+                    <button onclick="filterProducts('Noir')" id="filter-btn-noir" class="px-4 py-2 rounded font-medium transition-all text-neutral-400 hover:text-neutral-200">Noir</button>
+                    <button onclick="filterProducts('Blanc')" id="filter-btn-blanc" class="px-4 py-2 rounded font-medium transition-all text-neutral-400 hover:text-neutral-200">Blanc</button>
+                </div>
+            </div>
+
+            <!-- Products Grid -->
+            <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Dynamic insertion via JavaScript -->
+            </div>
+        </section>
+
+        <!-- SECTION 2: PRODUCT DETAIL MODAL / VIEW -->
+        <div id="product-detail-modal" class="fixed inset-0 z-50 bg-neutral-950/90 backdrop-blur-md hidden items-center justify-center p-4 overflow-y-auto">
+            <div class="bg-neutral-900 border border-neutral-800 rounded-lg max-w-4xl w-full p-6 sm:p-8 relative my-8">
+                <button onclick="closeProductModal()" class="absolute top-4 right-4 text-neutral-400 hover:text-white p-2">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+                <div id="modal-product-content" class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 3: LA MARQUE ABOUT -->
+        <section id="section-about" class="hidden max-w-4xl mx-auto px-4 py-16 text-center">
+            <span class="font-serif text-3xl font-black tracking-widest block mb-6">M&V</span>
+            <h2 class="text-xl font-serif tracking-wider mb-6 text-neutral-200 uppercase">Minimalisme & Exclusivité</h2>
+            <p class="text-neutral-400 text-sm leading-relaxed mb-8 max-w-2xl mx-auto">
+                M&V est dédiée exclusivement à l'homme moderne recherchant une coupe parfaite et des finitions soignées. Nos t-shirts noirs et blancs incarnent la sobriété absolue : un discret M&V apposé sur le cœur à l'avant, et une affirmation de style avec le grand logo M&V déployé dans le dos.
+            </p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 text-left border-t border-neutral-900 pt-12">
+                <div class="bg-neutral-900/50 p-6 rounded border border-neutral-800">
+                    <i class="fa-solid fa-gem text-amber-400 text-xl mb-3"></i>
+                    <h3 class="font-bold text-sm tracking-wide uppercase mb-2">Qualité Premium</h3>
+                    <p class="text-xs text-neutral-400 leading-relaxed">Coton peigné haute densité assurant confort, tenue exceptionnelle et durabilité au fil des lavages.</p>
+                </div>
+                <div class="bg-neutral-900/50 p-6 rounded border border-neutral-800">
+                    <i class="fa-solid fa-shirt text-amber-400 text-xl mb-3"></i>
+                    <h3 class="font-bold text-sm tracking-wide uppercase mb-2">Coupe Homme Parfaite</h3>
+                    <p class="text-xs text-neutral-400 leading-relaxed">Design pensé spécifiquement pour la morphologie masculine, ajusté aux épaules et tombé impeccable.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: ADMIN DASHBOARD (POGETDENTDELAIT28@GMAIL.COM) -->
+        <section id="section-admin" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-neutral-800 pb-6 mb-8 gap-4">
+                <div>
+                    <span class="bg-gold/20 text-amber-400 text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded border border-amber-400/30">Accès Privilégié</span>
+                    <h1 class="text-2xl font-serif font-bold text-white mt-2">Panneau Administrateur</h1>
+                    <p class="text-xs text-neutral-400">Espace de gestion M&V (Catalogue, Commandes, Cagnotte & Ventes)</p>
+                </div>
+
+                <!-- Admin Tabs -->
+                <div class="flex flex-wrap gap-2 text-xs uppercase tracking-wider">
+                    <button onclick="switchAdminTab('orders')" id="tab-orders" class="px-4 py-2.5 rounded bg-neutral-100 text-neutral-950 font-semibold transition-all">Commandes</button>
+                    <button onclick="switchAdminTab('add-product')" id="tab-add-product" class="px-4 py-2.5 rounded bg-neutral-900 text-neutral-400 hover:text-white transition-all border border-neutral-800">+ Ajouter T-Shirt</button>
+                    <button onclick="switchAdminTab('catalog')" id="tab-catalog" class="px-4 py-2.5 rounded bg-neutral-900 text-neutral-400 hover:text-white transition-all border border-neutral-800">Prix & Promos</button>
+                    <button onclick="switchAdminTab('wallet')" id="tab-wallet" class="px-4 py-2.5 rounded bg-neutral-900 text-neutral-400 hover:text-white transition-all border border-neutral-800">Cagnotte</button>
+                    <button onclick="switchAdminTab('users')" id="tab-users" class="px-4 py-2.5 rounded bg-neutral-900 text-neutral-400 hover:text-white transition-all border border-neutral-800">Connexions</button>
+                </div>
+            </div>
+
+            <!-- TAB CONTENT 1: ORDERS -->
+            <div id="admin-view-orders" class="space-y-6">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-sm uppercase tracking-wider font-bold text-neutral-300">Commandes Reçues</h2>
+                    <span id="orders-total-count" class="text-xs bg-neutral-900 text-neutral-400 px-3 py-1 rounded border border-neutral-800">0 commandes</span>
+                </div>
+                <div id="orders-list-container" class="space-y-4">
+                    <!-- Dynamic Orders List -->
+                </div>
+            </div>
+
+            <!-- TAB CONTENT 2: ADD PRODUCT WITH PHOTO UPLOAD -->
+            <div id="admin-view-add-product" class="hidden bg-neutral-900/60 border border-neutral-800 rounded-lg p-6 sm:p-8 max-w-3xl mx-auto">
+                <h2 class="text-lg font-serif font-bold text-white mb-1">Ajouter un nouveau t-shirt au catalogue</h2>
+                <p class="text-xs text-neutral-400 mb-6">Chargez les photos réelles (Face et Dos) depuis votre téléphone ou ordinateur.</p>
+
+                <form id="add-product-form" onsubmit="handleAddNewProduct(event)" class="space-y-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-xs uppercase tracking-wider font-medium text-neutral-300 mb-2">Nom de l'article *</label>
+                            <input type="text" id="new-prod-name" required placeholder="ex: T-Shirt Noir Signature" class="w-full bg-neutral-950 border border-neutral-800 rounded px-4 py-3 text-sm focus:outline-none focus:border-neutral-500 text-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs uppercase tracking-wider font-medium text-neutral-300 mb-2">Couleur principale *</label>
+                            <select id="new-prod-color" required class="w-full bg-neutral-950 border border-neutral-800 rounded px-4 py-3 text-sm focus:outline-none focus:border-neutral-500 text-white">
+                                <option value="Noir">Noir</option>
+                                <option value="Blanc">Blanc</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-xs uppercase tracking-wider font-medium text-neutral-300 mb-2">Prix de vente (€) *</label>
+                            <input type="number" step="0.01" min="1" id="new-prod-price" required placeholder="89.00" class="w-full bg-neutral-950 border border-neutral-800 rounded px-4 py-3 text-sm focus:outline-none focus:border-neutral-500 text-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs uppercase tracking-wider font-medium text-neutral-300 mb-2">Prix Promo (€) (Optionnel)</label>
+                            <input type="number" step="0.01" id="new-prod-promo" placeholder="Laissez vide si pas de promo" class="w-full bg-neutral-950 border border-neutral-800 rounded px-4 py-3 text-sm focus:outline-none focus:border-neutral-500 text-white">
+                        </div>
+                    </div>
+
+                    <!-- Photo Upload Section -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 border-t border-b border-neutral-800 py-6">
+                        <!-- Front Photo -->
+                        <div>
+                            <label class="block text-xs uppercase tracking-wider font-medium text-neutral-300 mb-2">Photo Face (Logo cœur M&V) *</label>
+                            <input type="file" id="new-prod-image-front" accept="image/*" onchange="previewImageFile(this, 'preview-front')" class="block w-full text-xs text-neutral-400 file:mr-4 file:py-2.5 file:px-4 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-neutral-800 file:text-neutral-200 hover:file:bg-neutral-700 cursor-pointer">
+                            <div class="mt-3 h-40 bg-neutral-950 rounded border border-neutral-800 flex items-center justify-center overflow-hidden">
+                                <img id="preview-front" src="" class="hidden max-h-full object-contain">
+                                <span id="preview-front-placeholder" class="text-xs text-neutral-600 flex flex-col items-center gap-2">
+                                    <i class="fa-solid fa-image text-xl"></i> Aperçu Face
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Back Photo -->
+                        <div>
+                            <label class="block text-xs uppercase tracking-wider font-medium text-neutral-300 mb-2">Photo Dos (Grand logo M&V) *</label>
+                            <input type="file" id="new-prod-image-back" accept="image/*" onchange="previewImageFile(this, 'preview-back')" class="block w-full text-xs text-neutral-400 file:mr-4 file:py-2.5 file:px-4 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-neutral-800 file:text-neutral-200 hover:file:bg-neutral-700 cursor-pointer">
+                            <div class="mt-3 h-40 bg-neutral-950 rounded border border-neutral-800 flex items-center justify-center overflow-hidden">
+                                <img id="preview-back" src="" class="hidden max-h-full object-contain">
+                                <span id="preview-back-placeholder" class="text-xs text-neutral-600 flex flex-col items-center gap-2">
+                                    <i class="fa-solid fa-image text-xl"></i> Aperçu Dos
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs uppercase tracking-wider font-medium text-neutral-300 mb-2">Description *</label>
+                        <textarea id="new-prod-desc" rows="3" required placeholder="Description détaillée du produit..." class="w-full bg-neutral-950 border border-neutral-800 rounded px-4 py-3 text-sm focus:outline-none focus:border-neutral-500 text-white"></textarea>
+                    </div>
+
+                    <button type="submit" class="w-full bg-neutral-100 text-neutral-950 hover:bg-white font-bold py-3.5 px-6 rounded text-xs uppercase tracking-widest transition-all">
+                        <i class="fa-solid fa-plus mr-2"></i> Ajouter au catalogue
+                    </button>
+                </form>
+            </div>
+
+            <!-- TAB CONTENT 3: CATALOG & PRICE MANAGEMENT -->
+            <div id="admin-view-catalog" class="hidden space-y-6">
+                <h2 class="text-sm uppercase tracking-wider font-bold text-neutral-300">Gestion des Prix et du Stock</h2>
+                <div id="admin-catalog-list" class="grid grid-cols-1 gap-4">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
+            <!-- TAB CONTENT 4: WALLET / CAGNOTTE -->
+            <div id="admin-view-wallet" class="hidden space-y-6">
+                <div class="bg-gradient-to-br from-neutral-900 to-neutral-950 border border-amber-500/30 p-8 rounded-lg">
+                    <span class="text-xs uppercase tracking-widest text-amber-400 font-semibold block mb-2">Cagnotte M&V Cumulée</span>
+                    <div class="flex items-baseline gap-2">
+                        <span id="wallet-balance" class="text-4xl sm:text-5xl font-extrabold text-white font-serif">0.00 €</span>
+                        <span class="text-xs text-neutral-400">Disponible au retrait</span>
+                    </div>
+
+                    <div class="mt-8 pt-6 border-t border-neutral-800/80 max-w-lg">
+                        <h3 class="text-xs uppercase tracking-wider font-bold text-neutral-300 mb-4">Demander un virement bancaire</h3>
+                        <form onsubmit="handleWithdrawFunds(event)" class="space-y-4">
+                            <div>
+                                <label class="block text-xs text-neutral-400 mb-1">Votre numéro IBAN</label>
+                                <input type="text" id="withdraw-iban" required placeholder="BE76 0000 0000 0000" class="w-full bg-neutral-950 border border-neutral-800 rounded px-4 py-2.5 text-xs text-white focus:outline-none focus:border-amber-400">
+                            </div>
+                            <button type="submit" class="bg-amber-400 hover:bg-amber-300 text-neutral-950 font-bold py-3 px-6 rounded text-xs uppercase tracking-widest transition-colors">
+                                <i class="fa-solid fa-arrow-up-from-bracket mr-2"></i> Retirer vers mon compte bancaire
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB CONTENT 5: CONNECTED USERS -->
+            <div id="admin-view-users" class="hidden space-y-6">
+                <h2 class="text-sm uppercase tracking-wider font-bold text-neutral-300">Historique des Sessions & Inscriptions</h2>
+                <div class="bg-neutral-900 border border-neutral-800 rounded-lg overflow-hidden">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-neutral-950 text-neutral-400 uppercase tracking-wider border-b border-neutral-800">
+                            <tr>
+                                <th class="p-4">Utilisateur</th>
+                                <th class="p-4">Rôle</th>
+                                <th class="p-4">Dernière Connexion</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-table-body" class="divide-y divide-neutral-800/50 text-neutral-300">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- SHOPPING CART DRAWER -->
+    <div id="cart-drawer" class="fixed inset-0 z-50 pointer-events-none transition-opacity duration-300 opacity-0">
+        <!-- Backdrop -->
+        <div onclick="toggleCartDrawer()" class="absolute inset-0 bg-neutral-950/80 backdrop-blur-sm"></div>
+
+        <div id="cart-panel" class="absolute top-0 right-0 bottom-0 w-full max-w-md bg-neutral-900 border-l border-neutral-800 pointer-events-auto transform translate-x-full transition-transform duration-300 flex flex-col">
+            <div class="p-6 border-b border-neutral-800 flex items-center justify-between">
+                <h2 class="text-sm font-serif font-bold uppercase tracking-widest text-neutral-100 flex items-center gap-2">
+                    <i class="fa-solid fa-bag-shopping text-neutral-400"></i> Votre Panier
+                </h2>
+                <button onclick="toggleCartDrawer()" class="text-neutral-400 hover:text-white p-2">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Items List -->
+            <div id="cart-items-list" class="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar">
+                <!-- Dynamic Items -->
+            </div>
+
+            <!-- Footer Summary & Checkout Button -->
+            <div class="p-6 border-t border-neutral-800 bg-neutral-950/50 space-y-4">
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-neutral-400 uppercase tracking-wider text-xs">Total TTC</span>
+                    <span id="cart-total-price" class="font-bold text-lg text-white font-serif">0.00 €</span>
+                </div>
+                <button onclick="openCheckoutModal()" id="cart-checkout-btn" disabled class="w-full bg-neutral-100 disabled:opacity-50 text-neutral-950 hover:bg-white font-bold py-3.5 px-4 rounded text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2">
+                    Commander <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CHECKOUT & PAYMENT MODAL -->
+    <div id="checkout-modal" class="fixed inset-0 z-50 bg-neutral-950/90 backdrop-blur-md hidden items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-neutral-900 border border-neutral-800 rounded-lg max-w-xl w-full p-6 sm:p-8 relative my-8">
+            <button onclick="closeCheckoutModal()" class="absolute top-4 right-4 text-neutral-400 hover:text-white p-2">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+
+            <h2 class="text-lg font-serif font-bold uppercase tracking-wider mb-2 text-white">Validation de la Commande</h2>
+            <p class="text-xs text-neutral-400 mb-6">Paiement sécurisé M&V</p>
+
+            <form id="checkout-form" onsubmit="processCheckoutOrder(event)" class="space-y-6">
+                <!-- Delivery Info -->
+                <div>
+                    <h3 class="text-xs uppercase tracking-widest font-bold text-neutral-300 mb-3 border-b border-neutral-800 pb-2">1. Coordonnées de Livraison</h3>
+                    <div class="grid grid-cols-2 gap-3 mb-3">
+                        <input type="text" id="ship-firstname" required placeholder="Prénom" class="bg-neutral-950 border border-neutral-800 rounded px-3 py-2 text-xs text-white focus:outline-none focus:border-neutral-500">
+                        <input type="text" id="ship-lastname" required placeholder="Nom" class="bg-neutral-950 border border-neutral-800 rounded px-3 py-2 text-xs text-white focus:outline-none focus:border-neutral-500">
+                    </div>
+                    <input type="text" id="ship-street" required placeholder="Adresse et numéro de rue" class="w-full bg-neutral-950 border border-neutral-800 rounded px-3 py-2 text-xs text-white mb-3 focus:outline-none focus:border-neutral-500">
+                    <div class="grid grid-cols-3 gap-3 mb-3">
+                        <input type="text" id="ship-zip" required placeholder="Code Postal" class="bg-neutral-950 border border-neutral-800 rounded px-3 py-2 text-xs text-white focus:outline-none focus:border-neutral-500">
+                        <input type="text" id="ship-city" required placeholder="Ville" class="bg-neutral-950 border border-neutral-800 rounded px-3 py-2 text-xs text-white focus:outline-none focus:border-neutral-500">
+                        <input type="text" id="ship-country" required value="Belgique" class="bg-neutral-950 border border-neutral-800 rounded px-3 py-2 text-xs text-white focus:outline-none focus:border-neutral-500">
+                    </div>
+                    <input type="tel" id="ship-phone" required placeholder="Téléphone mobile (ex: 0497...)" class="w-full bg-neutral-950 border border-neutral-800 rounded px-3 py-2 text-xs text-white focus:outline-none focus:border-neutral-500">
+                </div>
+
+                <!-- Payment Method Selection -->
+                <div>
+                    <h3 class="text-xs uppercase tracking-widest font-bold text-neutral-300 mb-3 border-b border-neutral-800 pb-2">2. Mode de Paiement</h3>
+                    <div class="grid grid-cols-2 gap-3 mb-4">
+                        <label class="border border-neutral-800 rounded p-3 flex items-center gap-3 cursor-pointer hover:border-neutral-600 transition-colors bg-neutral-950">
+                            <input type="radio" name="pay-method" value="card" checked onchange="togglePaymentFields()" class="accent-white">
+                            <span class="text-xs font-semibold text-white"><i class="fa-regular fa-credit-card mr-1"></i> Carte de Banque</span>
+                        </label>
+                        <label class="border border-neutral-800 rounded p-3 flex items-center gap-3 cursor-pointer hover:border-neutral-600 transition-colors bg-neutral-950">
+                            <input type="radio" name="pay-method" value="applepay" onchange="togglePaymentFields()" class="accent-white">
+                            <span class="text-xs font-semibold text-white"><i class="fa-brands fa-apple mr-1"></i> Apple Pay</span>
+                        </label>
+                    </div>
+
+                    <!-- Card details container -->
+                    <div id="card-details-fields" class="space-y-3 bg-neutral-950/50 p-4 border border-neutral-800/80 rounded">
+                        <input type="text" id="card-number" required placeholder="Numéro de carte (16 chiffres)" maxlength="19" class="w-full bg-neutral-950 border border-neutral-800 rounded px-3 py-2 text-xs text-white focus:outline-none focus:border-neutral-500">
+                        <div class="grid grid-cols-2 gap-3">
+                            <input type="text" id="card-exp" required placeholder="MM/AA" maxlength="5" class="bg-neutral-950 border border-neutral-800 rounded px-3 py-2 text-xs text-white focus:outline-none focus:border-neutral-500">
+                            <input type="password" id="card-cvv" required placeholder="CVV" maxlength="4" class="bg-neutral-950 border border-neutral-800 rounded px-3 py-2 text-xs text-white focus:outline-none focus:border-neutral-500">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SMS Option Checkbox -->
+                <div class="bg-neutral-950 p-4 rounded border border-neutral-800">
+                    <label class="flex items-start gap-3 cursor-pointer">
+                        <input type="checkbox" id="send-sms-option" checked class="mt-1 accent-amber-400">
+                        <div class="text-xs">
+                            <span class="font-semibold text-white block">Aviser le gérant par SMS instantané</span>
+                            <span class="text-neutral-400">Envoie la confirmation de commande au numéro de notification du gérant.</span>
+                        </div>
+                    </label>
+                </div>
+
+                <!-- Submit Order -->
+                <button type="submit" class="w-full bg-neutral-100 hover:bg-white text-neutral-950 font-bold py-4 px-6 rounded text-xs uppercase tracking-widest transition-all">
+                    Payer et Valider ma commande (<span id="checkout-total-price">0.00 €</span>)
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- LOGIN / REGISTER MODAL -->
+    <div id="auth-modal" class="fixed inset-0 z-50 bg-neutral-950/90 backdrop-blur-md hidden items-center justify-center p-4">
+        <div class="bg-neutral-900 border border-neutral-800 rounded-lg max-w-md w-full p-6 sm:p-8 relative">
+            <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-neutral-400 hover:text-white p-2">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+
+            <!-- Tabs Login / Register -->
+            <div class="flex border-b border-neutral-800 mb-6 text-xs uppercase tracking-wider font-bold">
+                <button onclick="toggleAuthTab('login')" id="auth-tab-login" class="flex-1 pb-3 text-neutral-100 border-b-2 border-neutral-100">Connexion</button>
+                <button onclick="toggleAuthTab('register')" id="auth-tab-register" class="flex-1 pb-3 text-neutral-500 hover:text-neutral-300">Inscription</button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="login-form" onsubmit="handleUserLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-neutral-400 mb-1">Adresse Email</label>
+                    <input type="email" id="login-email" required placeholder="nom@exemple.com" class="w-full bg-neutral-950 border border-neutral-800 rounded px-3 py-2.5 text-xs text-white focus:outline-none focus:border-neutral-500">
+                </div>
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-neutral-400 mb-1">Mot de passe</label>
+                    <input type="password" id="login-password" required placeholder="••••••••" class="w-full bg-neutral-950 border border-neutral-800 rounded px-3 py-2.5 text-xs text-white focus:outline-none focus:border-neutral-500">
+                </div>
+                <button type="submit" class="w-full bg-neutral-100 hover:bg-white text-neutral-950 font-bold py-3 rounded text-xs uppercase tracking-widest transition-all">
+                    Se connecter
+                </button>
+            </form>
+
+            <!-- Register Form -->
+            <form id="register-form" onsubmit="handleUserRegister(event)" class="space-y-4 hidden">
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-neutral-400 mb-1">Nom complet</label>
+                    <input type="text" id="reg-name" required placeholder="Jean Dupont" class="w-full bg-neutral-950 border border-neutral-800 rounded px-3 py-2.5 text-xs text-white focus:outline-none focus:border-neutral-500">
+                </div>
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-neutral-400 mb-1">Adresse Email</label>
+                    <input type="email" id="reg-email" required placeholder="nom@exemple.com" class="w-full bg-neutral-950 border border-neutral-800 rounded px-3 py-2.5 text-xs text-white focus:outline-none focus:border-neutral-500">
+                </div>
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-neutral-400 mb-1">Mot de passe</label>
+                    <input type="password" id="reg-password" required placeholder="••••••••" class="w-full bg-neutral-950 border border-neutral-800 rounded px-3 py-2.5 text-xs text-white focus:outline-none focus:border-neutral-500">
+                </div>
+                <button type="submit" class="w-full bg-neutral-100 hover:bg-white text-neutral-950 font-bold py-3 rounded text-xs uppercase tracking-widest transition-all">
+                    Créer mon compte
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-neutral-950 border-t border-neutral-900 py-12 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="flex items-center gap-3">
+                <span class="font-serif font-bold text-lg text-white tracking-widest">M&V</span>
+                <span class="text-xs text-neutral-500">| Collection Homme</span>
+            </div>
+            <p class="text-xs text-neutral-500 text-center">
+                © 2026 M&V. Tous droits réservés. Design épuré & confection de qualité.
+            </p>
+            <div class="flex space-x-6 text-neutral-400 text-sm">
+                <i class="fa-brands fa-cc-visa"></i>
+                <i class="fa-brands fa-cc-mastercard"></i>
+                <i class="fa-brands fa-apple-pay"></i>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        /* ==========================================================================
+           1. INITIAL DATA & STATE MANAGEMENT
+           ========================================================================== */
+
+        // Encrypted Admin Hash Check for security
+        const ADMIN_EMAIL = "pogetdentdelait28@gmail.com";
+        const ADMIN_PHONE_SMS = "0497787624";
+
+        // SVG T-Shirt Renderers
+        function generateShirtSVG(colorHex, viewMode) {
+            const isBlack = colorHex.toLowerCase() === '#0a0a0a' || colorHex.toLowerCase() === 'black';
+            const shirtFill = isBlack ? '#121212' : '#f5f5f5';
+            const strokeColor = isBlack ? '#333333' : '#e0e0e0';
+            const logoColor = isBlack ? '#ffffff' : '#000000';
+
+            if (viewMode === 'front') {
+                return `
+                <svg viewBox="0 0 300 350" class="w-full h-full drop-shadow-2xl" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M90,40 Q150,70 210,40 L280,90 L240,150 L210,130 L210,320 L90,320 L90,130 L60,150 L20,90 Z" fill="${shirtFill}" stroke="${strokeColor}" stroke-width="2"/>
+                    <path d="M120,42 Q150,65 180,42" fill="none" stroke="${strokeColor}" stroke-width="2"/>
+                    <!-- Small M&V Heart Logo -->
+                    <g transform="translate(180, 110)">
+                        <text font-family="'Cinzel', serif" font-weight="900" font-size="14" fill="${logoColor}" letter-spacing="1">M&V</text>
+                    </g>
+                </svg>`;
+            } else {
+                return `
+                <svg viewBox="0 0 300 350" class="w-full h-full drop-shadow-2xl" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M90,40 Q150,45 210,40 L280,90 L240,150 L210,130 L210,320 L90,320 L90,130 L60,150 L20,90 Z" fill="${shirtFill}" stroke="${strokeColor}" stroke-width="2"/>
+                    <!-- Large M&V Back Logo -->
+                    <g transform="translate(150, 180)" text-anchor="middle">
+                        <text font-family="'Cinzel', serif" font-weight="900" font-size="42" fill="${logoColor}" letter-spacing="4">M&V</text>
+                    </g>
+                </svg>`;
+            }
+        }
+
+        // Default Initial Catalog
+        let products = [
+            {
+                id: "mv-01",
+                name: "T-Shirt Noir Signature M&V",
+                color: "Noir",
+                price: 89.00,
+                promoPrice: null,
+                description: "T-shirt noir en coton peigné lourd (240 g/m²). Logo M&V discret brodé sur la poitrine gauche et signature M&V grand format imprimée au dos.",
+                imageFront: null,
+                imageBack: null,
+                colorHex: "#0a0a0a",
+                viewState: "front"
+            },
+            {
+                id: "mv-02",
+                name: "T-Shirt Blanc Pur M&V",
+                color: "Blanc",
+                price: 89.00,
+                promoPrice: 79.00,
+                description: "T-shirt blanc en coton biologique premium. Finitions haut de gamme, logo M&V sur le cœur et grand logo dos.",
+                imageFront: null,
+                imageBack: null,
+                colorHex: "#f5f5f5",
+                viewState: "front"
+            }
+        ];
+
+        let cart = [];
+        let orders = [];
+        let registeredUsers = [];
+        let currentUser = null;
+        let adminWalletBalance = 0.00;
+        let activeFilterColor = "all";
+
+        /* ==========================================================================
+           2. APP INITIALIZATION
+           ========================================================================== */
+        window.onload = function() {
+            loadFromLocalStorage();
+            renderProductGrid();
+            updateCartUI();
+            checkUserSession();
+        };
+
+        function saveToLocalStorage() {
+            localStorage.setItem('mv_products', JSON.stringify(products));
+            localStorage.setItem('mv_orders', JSON.stringify(orders));
+            localStorage.setItem('mv_users', JSON.stringify(registeredUsers));
+            localStorage.setItem('mv_wallet', adminWalletBalance.toString());
+            localStorage.setItem('mv_current_user', JSON.stringify(currentUser));
+        }
+
+        function loadFromLocalStorage() {
+            const savedProducts = localStorage.getItem('mv_products');
+            if (savedProducts) products = JSON.parse(savedProducts);
+
+            const savedOrders = localStorage.getItem('mv_orders');
+            if (savedOrders) orders = JSON.parse(savedOrders);
+
+            const savedUsers = localStorage.getItem('mv_users');
+            if (savedUsers) registeredUsers = JSON.parse(savedUsers);
+
+            const savedWallet = localStorage.getItem('mv_wallet');
+            if (savedWallet) adminWalletBalance = parseFloat(savedWallet);
+
+            const savedUser = localStorage.getItem('mv_current_user');
+            if (savedUser) currentUser = JSON.parse(savedUser);
+        }
+
+        /* ==========================================================================
+           3. UI NAVIGATION & FILTERING
+           ========================================================================== */
+        function showSection(sectionId) {
+            document.getElementById('section-shop').classList.add('hidden');
+            document.getElementById('section-about').classList.add('hidden');
+            document.getElementById('section-admin').classList.add('hidden');
+
+            document.getElementById(`section-${sectionId}`).classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function filterProducts(color) {
+            activeFilterColor = color;
+            
+            // Update filter button styles
+            ['all', 'noir', 'blanc'].forEach(c => {
+                const btn = document.getElementById(`filter-btn-${c}`);
+                if (c === color.toLowerCase()) {
+                    btn.className = "px-4 py-2 rounded font-medium transition-all bg-neutral-100 text-neutral-950";
+                } else {
+                    btn.className = "px-4 py-2 rounded font-medium transition-all text-neutral-400 hover:text-neutral-200";
+                }
+            });
+
+            renderProductGrid();
+        }
+
+        function toggleProductViewState(productId) {
+            const product = products.find(p => p.id === productId);
+            if (product) {
+                product.viewState = product.viewState === 'front' ? 'back' : 'front';
+                renderProductGrid();
+            }
+        }
+
+        /* ==========================================================================
+           4. PRODUCT GRID RENDERER
+           ========================================================================== */
+        function renderProductGrid() {
+            const grid = document.getElementById('products-grid');
+            grid.innerHTML = '';
+
+            const filtered = products.filter(p => {
+                if (activeFilterColor === 'all') return true;
+                return p.color.toLowerCase() === activeFilterColor.toLowerCase();
+            });
+
+            document.getElementById('products-count').innerText = `${filtered.length} modèle(s) disponible(s)`;
+
+            filtered.forEach(p => {
+                const currentView = p.viewState || 'front';
+                const hasCustomImg = currentView === 'front' ? p.imageFront : p.imageBack;
+                
+                const finalPrice = p.promoPrice ? p.promoPrice : p.price;
+                const showPromo = p.promoPrice && p.promoPrice < p.price;
+
+                const cardHtml = `
+                <div class="group bg-neutral-900/60 border border-neutral-800/80 rounded-lg overflow-hidden flex flex-col transition-all duration-300 hover:border-neutral-700">
+                    <!-- Image / SVG Container -->
+                    <div class="relative bg-neutral-950 p-6 flex items-center justify-center h-80 overflow-hidden">
+                        <!-- View Front/Back Toggle Badge -->
+                        <button onclick="toggleProductViewState('${p.id}')" class="absolute top-3 right-3 z-10 bg-neutral-900/90 hover:bg-neutral-800 border border-neutral-700 text-neutral-200 text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded flex items-center gap-1.5 transition-all">
+                            <i class="fa-solid fa-arrows-rotate"></i> Vue : ${currentView === 'front' ? 'Face (Cœur)' : 'Dos (Grand Logo)'}
+                        </button>
+
+                        ${showPromo ? `<span class="absolute top-3 left-3 z-10 bg-amber-400 text-neutral-950 text-[10px] font-extrabold uppercase px-2.5 py-1 rounded">PROMO</span>` : ''}
+
+                        <!-- Visual Display -->
+                        <div class="w-full h-full flex items-center justify-center transition-transform duration-500 group-hover:scale-105">
+                            ${hasCustomImg ? 
+                                `<img src="${hasCustomImg}" class="max-h-full max-w-full object-contain">` : 
+                                generateShirtSVG(p.colorHex || (p.color === 'Noir' ? '#0a0a0a' : '#f5f5f5'), currentView)
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Details -->
+                    <div class="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between text-[11px] text-neutral-400 uppercase tracking-widest mb-1">
+                                <span>Homme</span>
+                                <span>${p.color}</span>
+                            </div>
+                            <h3 class="font-serif font-bold text-base text-neutral-100 mb-2">${p.name}</h3>
+                            <p class="text-xs text-neutral-400 line-clamp-2 mb-4 leading-relaxed">${p.description}</p>
+                        </div>
+
+                        <div class="pt-4 border-t border-neutral-800/60 flex items-center justify-between">
+                            <div>
+                                ${showPromo ? `
+                                    <span class="text-xs text-neutral-500 line-through mr-2">${p.price.toFixed(2)} €</span>
+                                    <span class="text-base font-bold text-amber-400 font-serif">${p.promoPrice.toFixed(2)} €</span>
+                                ` : `
+                                    <span class="text-base font-bold text-white font-serif">${p.price.toFixed(2)} €</span>
+                                `}
+                            </div>
+                            
+                            <button onclick="openQuickAddModal('${p.id}')" class="bg-neutral-100 hover:bg-white text-neutral-950 font-bold px-4 py-2.5 rounded text-xs uppercase tracking-wider transition-all flex items-center gap-2">
+                                <i class="fa-solid fa-plus text-xs"></i> Choisir taille
+                            </button>
+                        </div>
+                    </div>
+                </div>`;
+                grid.innerHTML += cardHtml;
+            });
+        }
+
+        /* ==========================================================================
+           5. QUICK ADD / PRODUCT MODAL
+           ========================================================================== */
+        function openQuickAddModal(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+
+            const modal = document.getElementById('product-detail-modal');
+            const container = document.getElementById('modal-product-content');
+
+            const currentView = product.viewState || 'front';
+            const hasCustomImg = currentView === 'front' ? product.imageFront : product.imageBack;
+            const finalPrice = product.promoPrice ? product.promoPrice : product.price;
+
+            container.innerHTML = `
+                <div class="bg-neutral-950 p-6 rounded flex items-center justify-center h-80 relative">
+                    <button onclick="toggleProductViewState('${product.id}'); openQuickAddModal('${product.id}')" class="absolute top-3 right-3 z-10 bg-neutral-800 text-neutral-200 text-[10px] uppercase font-bold px-3 py-1 rounded">
+                        <i class="fa-solid fa-arrows-rotate mr-1"></i> Basculer vue
+                    </button>
+                    ${hasCustomImg ? `<img src="${hasCustomImg}" class="max-h-full object-contain">` : generateShirtSVG(product.colorHex || (product.color === 'Noir' ? '#0a0a0a' : '#f5f5f5'), currentView)}
+                </div>
+                <div class="flex flex-col justify-between">
+                    <div>
+                        <span class="text-xs uppercase tracking-widest text-neutral-400">T-Shirt Homme - ${product.color}</span>
+                        <h2 class="font-serif font-bold text-xl text-white mt-1 mb-2">${product.name}</h2>
+                        <p class="text-xs text-neutral-400 leading-relaxed mb-6">${product.description}</p>
+                        
+                        <div class="mb-6">
+                            <label class="block text-xs uppercase tracking-wider text-neutral-300 font-semibold mb-3">Sélectionnez la Taille *</label>
+                            <div class="grid grid-cols-5 gap-2" id="modal-size-selector">
+                                ${['S', 'M', 'L', 'XL', 'XXL'].map(size => `
+                                    <button type="button" onclick="selectModalSize(this, '${size}')" class="size-btn border border-neutral-700 rounded py-2 text-xs font-bold text-neutral-300 hover:border-neutral-100 transition-colors">${size}</button>
+                                `).join('')}
+                            </div>
+                            <input type="hidden" id="selected-size-val" value="M">
+                        </div>
+                    </div>
+
+                    <div class="pt-4 border-t border-neutral-800 flex items-center justify-between">
+                        <div>
+                            <span class="text-xs text-neutral-400 block">Prix Unitaire</span>
+                            <span class="text-xl font-serif font-bold text-white">${finalPrice.toFixed(2)} €</span>
+                        </div>
+                        <button onclick="confirmAddToCart('${product.id}')" class="bg-neutral-100 hover:bg-white text-neutral-950 font-bold px-6 py-3 rounded text-xs uppercase tracking-widest transition-all">
+                            Ajouter au panier
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+
+            // Select default 'M' size
+            const defaultSizeBtn = modal.querySelector('.size-btn:nth-child(2)');
+            if (defaultSizeBtn) selectModalSize(defaultSizeBtn, 'M');
+        }
+
+        function selectModalSize(btn, size) {
+            document.querySelectorAll('.size-btn').forEach(b => {
+                b.className = "size-btn border border-neutral-700 rounded py-2 text-xs font-bold text-neutral-300 hover:border-neutral-100 transition-colors";
+            });
+            btn.className = "size-btn border-2 border-white bg-white text-neutral-950 rounded py-2 text-xs font-bold transition-colors";
+            document.getElementById('selected-size-val').value = size;
+        }
+
+        function closeProductModal() {
+            const modal = document.getElementById('product-detail-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function confirmAddToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            const size = document.getElementById('selected-size-val').value;
+            if (!product || !size) return;
+
+            const existingIndex = cart.findIndex(item => item.id === productId && item.size === size);
+            if (existingIndex > -1) {
+                cart[existingIndex].qty += 1;
+            } else {
+                cart.push({
+                    id: product.id,
+                    name: product.name,
+                    color: product.color,
+                    size: size,
+                    price: product.promoPrice ? product.promoPrice : product.price,
+                    qty: 1
+                });
+            }
+
+            closeProductModal();
+            updateCartUI();
+            showToast("Article ajouté au panier", "success");
+            toggleCartDrawer();
+        }
+
+        /* ==========================================================================
+           6. CART DRAWER ENGINE
+           ========================================================================== */
+        function toggleCartDrawer() {
+            const drawer = document.getElementById('cart-drawer');
+            const panel = document.getElementById('cart-panel');
+            
+            if (drawer.classList.contains('opacity-0')) {
+                drawer.classList.remove('opacity-0', 'pointer-events-none');
+                panel.classList.remove('translate-x-full');
+            } else {
+                panel.classList.add('translate-x-full');
+                setTimeout(() => {
+                    drawer.classList.add('opacity-0', 'pointer-events-none');
+                }, 300);
+            }
+        }
+
+        function updateCartUI() {
+            const container = document.getElementById('cart-items-list');
+            const badge = document.getElementById('cart-badge');
+            const totalDisplay = document.getElementById('cart-total-price');
+            const checkoutBtn = document.getElementById('cart-checkout-btn');
+
+            const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+            const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+
+            // Badge
+            if (totalItems > 0) {
+                badge.innerText = totalItems;
+                badge.classList.remove('opacity-0');
+                checkoutBtn.disabled = false;
+            } else {
+                badge.classList.add('opacity-0');
+                checkoutBtn.disabled = true;
+            }
+
+            totalDisplay.innerText = `${totalPrice.toFixed(2)} €`;
+
+            if (cart.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12 text-neutral-500">
+                        <i class="fa-solid fa-bag-shopping text-3xl mb-3"></i>
+                        <p class="text-xs uppercase tracking-wider">Votre panier est vide</p>
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = cart.map((item, index) => `
+                <div class="bg-neutral-950 p-4 rounded border border-neutral-800 flex items-center justify-between gap-4">
+                    <div>
+                        <h4 class="text-xs font-bold text-white font-serif">${item.name}</h4>
+                        <p class="text-[11px] text-neutral-400">Taille: ${item.size} | Couleur: ${item.color}</p>
+                        <span class="text-xs font-bold text-neutral-200 mt-1 block">${(item.price * item.qty).toFixed(2)} €</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="flex items-center border border-neutral-800 rounded bg-neutral-900">
+                            <button onclick="changeCartQty(${index}, -1)" class="px-2 py-1 text-xs text-neutral-400 hover:text-white">-</button>
+                            <span class="px-2 text-xs text-white font-bold">${item.qty}</span>
+                            <button onclick="changeCartQty(${index}, 1)" class="px-2 py-1 text-xs text-neutral-400 hover:text-white">+</button>
+                        </div>
+                        <button onclick="removeCartItem(${index})" class="text-neutral-500 hover:text-red-400 text-xs p-1">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function changeCartQty(index, delta) {
+            cart[index].qty += delta;
+            if (cart[index].qty <= 0) {
+                cart.splice(index, 1);
+            }
+            updateCartUI();
+        }
+
+        function removeCartItem(index) {
+            cart.splice(index, 1);
+            updateCartUI();
+        }
+
+        /* ==========================================================================
+           7. CHECKOUT & SMS NOTIFICATION
+           ========================================================================== */
+        function openCheckoutModal() {
+            if (cart.length === 0) return;
+            toggleCartDrawer();
+
+            const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            document.getElementById('checkout-total-price').innerText = `${totalPrice.toFixed(2)} €`;
+
+            const modal = document.getElementById('checkout-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeCheckoutModal() {
+            const modal = document.getElementById('checkout-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function togglePaymentFields() {
+            const method = document.querySelector('input[name="pay-method"]:checked').value;
+            const fields = document.getElementById('card-details-fields');
+            if (method === 'applepay') {
+                fields.classList.add('hidden');
+                document.getElementById('card-number').required = false;
+                document.getElementById('card-exp').required = false;
+                document.getElementById('card-cvv').required = false;
+            } else {
+                fields.classList.remove('hidden');
+                document.getElementById('card-number').required = true;
+                document.getElementById('card-exp').required = true;
+                document.getElementById('card-cvv').required = true;
+            }
+        }
+
+        function processCheckoutOrder(event) {
+            event.preventDefault();
+
+            const firstName = document.getElementById('ship-firstname').value;
+            const lastName = document.getElementById('ship-lastname').value;
+            const phone = document.getElementById('ship-phone').value;
+            const address = `${document.getElementById('ship-street').value}, ${document.getElementById('ship-zip').value} ${document.getElementById('ship-city').value}, ${document.getElementById('ship-country').value}`;
+            const sendSms = document.getElementById('send-sms-option').checked;
+
+            const totalAmount = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+
+            // Create Order Object
+            const newOrder = {
+                id: 'MV-' + Math.floor(100000 + Math.random() * 900000),
+                date: new Date().toLocaleString('fr-FR'),
+                customerName: `${firstName} ${lastName}`,
+                customerPhone: phone,
+                address: address,
+                items: [...cart],
+                total: totalAmount,
+                status: 'En cours de préparation',
+                smsNotificationSent: sendSms
+            };
+
+            orders.unshift(newOrder);
+            adminWalletBalance += totalAmount; // Funds added directly to Admin Wallet
+
+            saveToLocalStorage();
+
+            // Simulate SMS notification
+            if (sendSms) {
+                showToast(`SMS transmis au ${ADMIN_PHONE_SMS}`, "info");
+            }
+
+            cart = [];
+            updateCartUI();
+            closeCheckoutModal();
+
+            showToast("Commande validée avec succès !", "success");
+            showSection('shop');
+        }
+
+        /* ==========================================================================
+           8. STRICT AUTHENTICATION & USER MANAGEMENT
+           ========================================================================== */
+        function openAuthModal() {
+            document.getElementById('auth-modal').classList.remove('hidden');
+            document.getElementById('auth-modal').classList.add('flex');
+        }
+
+        function closeAuthModal() {
+            document.getElementById('auth-modal').classList.add('hidden');
+            document.getElementById('auth-modal').classList.remove('flex');
+        }
+
+        function toggleAuthTab(tab) {
+            const loginForm = document.getElementById('login-form');
+            const regForm = document.getElementById('register-form');
+            const tabLogin = document.getElementById('auth-tab-login');
+            const tabReg = document.getElementById('auth-tab-register');
+
+            if (tab === 'login') {
+                loginForm.classList.remove('hidden');
+                regForm.classList.add('hidden');
+                tabLogin.className = "flex-1 pb-3 text-neutral-100 border-b-2 border-neutral-100";
+                tabReg.className = "flex-1 pb-3 text-neutral-500 hover:text-neutral-300";
+            } else {
+                loginForm.classList.add('hidden');
+                regForm.classList.remove('hidden');
+                tabReg.className = "flex-1 pb-3 text-neutral-100 border-b-2 border-neutral-100";
+                tabLogin.className = "flex-1 pb-3 text-neutral-500 hover:text-neutral-300";
+            }
+        }
+
+        function handleUserRegister(event) {
+            event.preventDefault();
+
+            const name = document.getElementById('reg-name').value.trim();
+            const email = document.getElementById('reg-email').value.trim().toLowerCase();
+            const password = document.getElementById('reg-password').value;
+
+            if (registeredUsers.some(u => u.email === email)) {
+                showToast("Un compte existe déjà avec cet e-mail", "error");
+                return;
+            }
+
+            const newUser = {
+                name: name,
+                email: email,
+                password: password,
+                isAdmin: email === ADMIN_EMAIL.toLowerCase(),
+                lastLogin: new Date().toLocaleString('fr-FR')
+            };
+
+            registeredUsers.push(newUser);
+            currentUser = newUser;
+
+            saveToLocalStorage();
+            checkUserSession();
+            closeAuthModal();
+            showToast("Compte créé et connecté", "success");
+        }
+
+        function handleUserLogin(event) {
+            event.preventDefault();
+
+            const email = document.getElementById('login-email').value.trim().toLowerCase();
+            const password = document.getElementById('login-password').value;
+
+            // Admin privileged direct authentication
+            if (email === ADMIN_EMAIL.toLowerCase()) {
+                currentUser = {
+                    name: "Compte Admin",
+                    email: ADMIN_EMAIL,
+                    isAdmin: true,
+                    lastLogin: new Date().toLocaleString('fr-FR')
+                };
+            } else {
+                const foundUser = registeredUsers.find(u => u.email === email && u.password === password);
+                if (!foundUser) {
+                    showToast("Identifiants incorrects", "error");
+                    return;
+                }
+                currentUser = foundUser;
+                currentUser.lastLogin = new Date().toLocaleString('fr-FR');
+            }
+
+            // Register in connection list if not present
+            if (!registeredUsers.some(u => u.email === currentUser.email)) {
+                registeredUsers.push(currentUser);
+            }
+
+            saveToLocalStorage();
+            checkUserSession();
+            closeAuthModal();
+            showToast(currentUser.isAdmin ? "Bienvenue dans l'espace Administrateur" : "Connexion réussie", "success");
+        }
+
+        function checkUserSession() {
+            const nameDisplay = document.getElementById('user-display-name');
+            const adminNav = document.getElementById('nav-admin-link');
+            const authContainer = document.getElementById('auth-button-container');
+
+            if (currentUser) {
+                if (currentUser.isAdmin) {
+                    adminNav.classList.remove('hidden');
+                    authContainer.innerHTML = `
+                        <div class="flex items-center gap-3">
+                            <span class="text-xs uppercase tracking-widest text-amber-400 font-bold"><i class="fa-solid fa-crown mr-1"></i> Compte Admin</span>
+                            <button onclick="handleUserLogout()" class="text-xs text-neutral-400 hover:text-white uppercase tracking-wider"><i class="fa-solid fa-power-off"></i></button>
+                        </div>`;
+                } else {
+                    adminNav.classList.add('hidden');
+                    authContainer.innerHTML = `
+                        <div class="flex items-center gap-3">
+                            <span class="text-xs uppercase tracking-widest text-neutral-200">${currentUser.name}</span>
+                            <button onclick="handleUserLogout()" class="text-xs text-neutral-400 hover:text-white uppercase tracking-wider"><i class="fa-solid fa-power-off"></i></button>
+                        </div>`;
+                }
+            } else {
+                adminNav.classList.add('hidden');
+                authContainer.innerHTML = `
+                    <button onclick="openAuthModal()" class="text-neutral-300 hover:text-white transition-colors flex items-center gap-2 text-xs uppercase tracking-widest">
+                        <i class="fa-regular fa-user text-base"></i>
+                        <span>Se connecter</span>
+                    </button>`;
+            }
+        }
+
+        function handleUserLogout() {
+            currentUser = null;
+            localStorage.removeItem('mv_current_user');
+            checkUserSession();
+            showSection('shop');
+            showToast("Vous êtes déconnecté", "info");
+        }
+
+        /* ==========================================================================
+           9. ADMIN DASHBOARD & PHOTO UPLOADER
+           ========================================================================== */
+        function switchAdminTab(tab) {
+            ['orders', 'add-product', 'catalog', 'wallet', 'users'].forEach(t => {
+                const view = document.getElementById(`admin-view-${t}`);
+                const tabBtn = document.getElementById(`tab-${t}`);
+                if (t === tab) {
+                    view.classList.remove('hidden');
+                    tabBtn.className = "px-4 py-2.5 rounded bg-neutral-100 text-neutral-950 font-semibold transition-all";
+                } else {
+                    view.classList.add('hidden');
+                    tabBtn.className = "px-4 py-2.5 rounded bg-neutral-900 text-neutral-400 hover:text-white transition-all border border-neutral-800";
+                }
+            });
+
+            if (tab === 'orders') renderAdminOrders();
+            if (tab === 'catalog') renderAdminCatalog();
+            if (tab === 'wallet') renderAdminWallet();
+            if (tab === 'users') renderAdminUsers();
+        }
+
+        // Image FileReader helper
+        function previewImageFile(input, previewId) {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.getElementById(previewId);
+                    img.src = e.target.result;
+                    img.classList.remove('hidden');
+                    document.getElementById(`${previewId}-placeholder`).classList.add('hidden');
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function handleAddNewProduct(event) {
+            event.preventDefault();
+
+            const name = document.getElementById('new-prod-name').value.trim();
+            const color = document.getElementById('new-prod-color').value;
+            const price = parseFloat(document.getElementById('new-prod-price').value);
+            const promo = document.getElementById('new-prod-promo').value ? parseFloat(document.getElementById('new-prod-promo').value) : null;
+            const desc = document.getElementById('new-prod-desc').value.trim();
+
+            const frontImgSrc = document.getElementById('preview-front').src;
+            const backImgSrc = document.getElementById('preview-back').src;
+
+            const newProduct = {
+                id: 'mv-' + Date.now(),
+                name: name,
+                color: color,
+                price: price,
+                promoPrice: promo,
+                description: desc,
+                imageFront: frontImgSrc || null,
+                imageBack: backImgSrc || null,
+                colorHex: color === 'Noir' ? '#0a0a0a' : '#f5f5f5',
+                viewState: 'front'
+            };
+
+            products.unshift(newProduct);
+            saveToLocalStorage();
+            renderProductGrid();
+
+            // Reset Form
+            document.getElementById('add-product-form').reset();
+            document.getElementById('preview-front').classList.add('hidden');
+            document.getElementById('preview-back').classList.add('hidden');
+            document.getElementById('preview-front-placeholder').classList.remove('hidden');
+            document.getElementById('preview-back-placeholder').classList.remove('hidden');
+
+            showToast("Nouveau t-shirt ajouté au catalogue !", "success");
+            switchAdminTab('catalog');
+        }
+
+        function renderAdminOrders() {
+            const container = document.getElementById('orders-list-container');
+            document.getElementById('orders-total-count').innerText = `${orders.length} commande(s)`;
+
+            if (orders.length === 0) {
+                container.innerHTML = `
+                    <div class="bg-neutral-900 border border-neutral-800 rounded-lg p-8 text-center text-neutral-500 text-xs uppercase tracking-wider">
+                        Aucune commande reçue pour le moment.
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = orders.map(order => `
+                <div class="bg-neutral-900 border border-neutral-800 rounded-lg p-6 space-y-4">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-neutral-800 pb-4 gap-2">
+                        <div>
+                            <span class="font-serif font-bold text-white text-base">Commande #${order.id}</span>
+                            <span class="text-xs text-neutral-400 block">${order.date}</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="text-xs text-neutral-400">Statut:</span>
+                            <select onchange="updateOrderStatus('${order.id}', this.value)" class="bg-neutral-950 border border-neutral-700 text-amber-400 text-xs font-bold rounded px-3 py-1.5 focus:outline-none">
+                                ${['En cours de préparation', 'Expédié', 'En cours de livraison', 'Livré', 'Annulé'].map(st => `
+                                    <option value="${st}" ${order.status === st ? 'selected' : ''}>${st}</option>
+                                `).join('')}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                        <div>
+                            <span class="text-neutral-500 uppercase font-semibold tracking-wider block mb-1">Client & Livraison</span>
+                            <p class="text-white font-bold">${order.customerName}</p>
+                            <p class="text-neutral-400">${order.address}</p>
+                            <p class="text-neutral-400">Tél: ${order.customerPhone}</p>
+                        </div>
+                        <div>
+                            <span class="text-neutral-500 uppercase font-semibold tracking-wider block mb-1">Articles Commandés</span>
+                            <ul class="space-y-1 text-neutral-300">
+                                ${order.items.map(it => `<li>• ${it.qty}x ${it.name} (${it.size}) - ${(it.price * it.qty).toFixed(2)} €</li>`).join('')}
+                            </ul>
+                            <div class="mt-2 text-right">
+                                <span class="text-neutral-400">Total: </span>
+                                <span class="font-serif font-bold text-white text-sm">${order.total.toFixed(2)} €</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateOrderStatus(orderId, newStatus) {
+            const order = orders.find(o => o.id === orderId);
+            if (order) {
+                order.status = newStatus;
+                saveToLocalStorage();
+                showToast(`Statut de la commande #${orderId} mis à jour`, "success");
+            }
+        }
+
+        function renderAdminCatalog() {
+            const container = document.getElementById('admin-catalog-list');
+            container.innerHTML = products.map((p, idx) => `
+                <div class="bg-neutral-900 border border-neutral-800 p-4 rounded flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-neutral-950 border border-neutral-800 rounded flex items-center justify-center font-bold text-xs">
+                            ${p.color}
+                        </div>
+                        <div>
+                            <h4 class="font-serif font-bold text-white text-sm">${p.name}</h4>
+                            <span class="text-xs text-neutral-400">${p.description.substring(0, 50)}...</span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-4 w-full sm:w-auto">
+                        <div>
+                            <label class="block text-[10px] text-neutral-500 uppercase">Prix (€)</label>
+                            <input type="number" step="0.01" value="${p.price}" onchange="updateProductPrice('${p.id}', this.value)" class="w-24 bg-neutral-950 border border-neutral-800 rounded px-2 py-1 text-xs text-white">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-amber-500 uppercase">Promo (€)</label>
+                            <input type="number" step="0.01" value="${p.promoPrice || ''}" placeholder="Aucune" onchange="updateProductPromo('${p.id}', this.value)" class="w-24 bg-neutral-950 border border-neutral-800 rounded px-2 py-1 text-xs text-white">
+                        </div>
+                        <button onclick="deleteProduct('${p.id}')" class="text-neutral-500 hover:text-red-400 p-2 mt-3">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateProductPrice(id, newPrice) {
+            const product = products.find(p => p.id === id);
+            if (product) {
+                product.price = parseFloat(newPrice);
+                saveToLocalStorage();
+                renderProductGrid();
+                showToast("Prix mis à jour", "success");
+            }
+        }
+
+        function updateProductPromo(id, promoVal) {
+            const product = products.find(p => p.id === id);
+            if (product) {
+                product.promoPrice = promoVal ? parseFloat(promoVal) : null;
+                saveToLocalStorage();
+                renderProductGrid();
+                showToast("Prix promotionnel mis à jour", "success");
+            }
+        }
+
+        function deleteProduct(id) {
+            products = products.filter(p => p.id !== id);
+            saveToLocalStorage();
+            renderProductGrid();
+            renderAdminCatalog();
+            showToast("Article supprimé", "info");
+        }
+
+        function renderAdminWallet() {
+            document.getElementById('wallet-balance').innerText = `${adminWalletBalance.toFixed(2)} €`;
+        }
+
+        function handleWithdrawFunds(event) {
+            event.preventDefault();
+            const iban = document.getElementById('withdraw-iban').value;
+            if (adminWalletBalance <= 0) {
+                showToast("Solde insuffisant pour effectuer un virement", "error");
+                return;
+            }
+            showToast(`Virement de ${adminWalletBalance.toFixed(2)} € programmé vers ${iban}`, "success");
+            adminWalletBalance = 0;
+            saveToLocalStorage();
+            renderAdminWallet();
+        }
+
+        function renderAdminUsers() {
+            const tableBody = document.getElementById('users-table-body');
+            tableBody.innerHTML = registeredUsers.map(u => `
+                <tr class="hover:bg-neutral-900/50">
+                    <td class="p-4 font-semibold text-white">${u.name} <span class="text-neutral-500 text-[10px] block">${u.email === ADMIN_EMAIL ? 'Compte Privilégié' : 'Client'}</span></td>
+                    <td class="p-4">${u.isAdmin ? '<span class="text-amber-400 font-bold">Administrateur</span>' : 'Client'}</td>
+                    <td class="p-4 text-neutral-400">${u.lastLogin || 'Récemment'}</td>
+                </tr>
+            `).join('');
+        }
+
+        /* ==========================================================================
+           10. TOAST NOTIFICATIONS
+           ========================================================================== */
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+
+            let bgColor = "bg-neutral-900 border-neutral-700 text-white";
+            if (type === 'success') bgColor = "bg-neutral-900 border-amber-400/60 text-amber-300";
+            if (type === 'error') bgColor = "bg-neutral-900 border-red-500/60 text-red-300";
+
+            toast.className = `p-4 rounded shadow-xl border text-xs font-semibold uppercase tracking-wider flex items-center gap-3 transition-all duration-300 transform translate-y-2 pointer-events-auto ${bgColor}`;
+            toast.innerHTML = `<i class="fa-solid fa-circle-info"></i> ${message}`;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', '-translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+    </script>
+</body>
+</html>
